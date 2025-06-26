@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                String                @id @default(uuid())
+  firstName         String
+  lastName          String
+  gender            String
+  phoneNumber       String
+  dateOfBirth       DateTime
+  bloodType         String
+  email             String                @unique
+  updatedAt         DateTime              @updatedAt
+  address           String
+  city              String
+  state             String
+  zipCode           String
+  emergencyContacts EmergencyContact[]
+  physicalInfo      PhysicalInformation[]
+  doctorDiagnosis   DoctorDiagnosis?
+  labResults        LabResult[]
+}
+
+model EmergencyContact {
+  id           String @id @default(uuid())
+  fullName     String
+  phoneNumber  String
+  email        String
+  relationship String
+  user         User   @relation(fields: [userId], references: [id])
+  userId       String
+}
+
+model PhysicalInformation {
+  id        String @id @default(uuid())
+  name      String
+  diagnosis String
+  phone     String
+  address   String
+  notes     String
+  user      User   @relation(fields: [userId], references: [id])
+  userId    String
+}
+
+model DoctorDiagnosis {
+  id                     String @id @default(uuid())
+  knownMedicalConditions String
+  allergies              String
+  user                   User   @relation(fields: [userId], references: [id])
+  userId                 String @unique
+}
+
+model LabResult {
+  id        String   @id @default(uuid())
+  message   String
+  doctor    Admin    @relation(fields: [doctorId], references: [id])
+  doctorId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id         String      @id @default(uuid())
+  fullName   String
+  email      String      @unique
+  password   String
+  role       Role
+  labResults LabResult[]
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  STAFF
+}
