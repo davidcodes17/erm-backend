@@ -17,7 +17,7 @@ export const login = async (req: Request, res: Response) => {
 
     const { email, password } = value;
 
-    const admin = await prisma.admin.findUnique({ where: { email } });
+    const admin = await prisma.admin.findUnique({ where: { email : email } });
     if (!admin) {
       res.status(404).json({ message: "Admin not found", success: false });
       return;
